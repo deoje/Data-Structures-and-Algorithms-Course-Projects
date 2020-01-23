@@ -39,7 +39,7 @@ public class Point2d extends AbstractPoint {
         return this;
     }
 
-    // TODO prendre un vecteur de donnees et appliquer la rotation. // FAIT?
+    // Prend un vecteur de donnees et appliquer la rotation.
     @Override
     public Point2d rotate(Double[][] rotationMatrix) {
         Double[] rotatedVector = new Double[this.vector.length];

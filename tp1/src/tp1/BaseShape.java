@@ -18,7 +18,7 @@ public class BaseShape {
     // TODO prendre une liste de points et creer une nouvelle forme.
     public BaseShape(Collection<Point2d> coords) {
         this.coords = new HashSet<>();
-        this.coords.add(new Point2d(0.0, 0.0));
+        //this.coords.add(new Point2d(0.0, 0.0));
         this.coords.addAll(coords);
     }
 
@@ -63,10 +63,15 @@ public class BaseShape {
         return new HashSet<>(coords);
     }
 
-    // TODO appliquer la rotation sur la forme.
+    // FIXME: Appliquer la rotation sur la forme.
+    // Je ne suis pas certain de comprendre à 100% ce qu'on veut.. .
     public BaseShape rotate(Double angle) {
-        coords.iterator().next().rotate(angle);
-        return this;
+        BaseShape newShape = new BaseShape(this.coords);
+        Iterator<Point2d> it = newShape.coords.iterator();
+        Point2d point = it.next().rotate(angle);
+        it.remove();
+        newShape.coords.add(point);
+        return newShape;
     }
 
     // TODO appliquer la rotation sur la liste.
