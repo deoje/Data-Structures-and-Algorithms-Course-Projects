@@ -3,7 +3,7 @@ package tp1;
 import java.awt.*;
 import java.util.*;
 import java.util.stream.Collectors;
-//utiliser structure donné2 Hachset()
+
 public class BaseShape {
     // Vous aller apprendre plus en details le fonctionnement d'un Set lors
     // du cours sur les fonctions de hashage, vous pouvez considerez ceci comme une liste normale.

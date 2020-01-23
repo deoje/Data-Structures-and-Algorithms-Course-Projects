@@ -4,31 +4,32 @@ public class Point2d extends AbstractPoint {
     private final Integer X = 0;
     private final Integer Y = 1;
 
-    // TODO creer un point en 2d avec 2 donnees // FAIT?
+    // Cree un point en 2d avec 2 donnees
     public Point2d(Double x, Double y) {
         super(new Double[]{x,y});
     }
 
-    // TODO creer un point a partir d'un vecteur de donnees // FAIT?
-    public Point2d(Double[] vector) {
-        super(vector);
-    }
+    // Cree un point a partir d'un vecteur de donnees
+    public Point2d(Double[] vector) { super(vector.clone()); }
 
     public Double X() { return vector[X];}
     public Double Y() { return vector[Y];}
 
-    // TODO prendre un vecteur de donnees et appliquer la translation. // FAIT
+    // Prend un vecteur de donnees et applique la translation.
     @Override
     public Point2d translate(Double[] translateVector) {
-        if (this.vector.length == translateVector.length){
-            for (int i = 0; i < this.vector.length ; i++) {
-                this.vector[i] += translateVector[i];
+
+        Point2d point = new Point2d(this.vector);
+
+        if (point.vector.length == translateVector.length){
+            for (int i = 0; i < point.vector.length ; i++) {
+                point.vector[i] += translateVector[i];
             }
         }
-        return this;
+        return point;
     }
 
-    // TODO prendre un point et appliquer la translation. // FAIT
+    // TODO prendre un point et appliquer la translation. // FAIT?
     public Point2d translate(Point2d translateVector) {
         if (this.vector.length == translateVector.vector.length){
             for (int i = 0; i < this.vector.length ; i++) {
@@ -52,8 +53,7 @@ public class Point2d extends AbstractPoint {
                 }
                 rotatedVector[i] = coordinate;
             }
-            Point2d rotatedVectorEnd = new Point2d(rotatedVector);
-            return rotatedVectorEnd;
+            return new Point2d(rotatedVector);
         }
         return this;
     }
@@ -62,46 +62,50 @@ public class Point2d extends AbstractPoint {
     public Point2d rotate(Double angle) {
         Double[][] rotationMatrix = new Double[2][2];
         rotationMatrix[0][0] = Math.cos(angle);
-        rotationMatrix[0][1] = Math.sin(angle);
-        rotationMatrix[1][0] = -Math.sin(angle);
+        rotationMatrix[0][1] = -Math.sin(angle);
+        rotationMatrix[1][0] = Math.sin(angle);
         rotationMatrix[1][1] = Math.cos(angle);
         return rotate(rotationMatrix);
     }
 
-    // TODO prendre un facteur de division et l'appliquer. FAIT?
+    // Prendre un facteur de division et l'appliquer
     @Override
     public Point2d divide(Double divider) {
+        Point2d point = new Point2d(this.vector);
         if (divider != 0){
-            for (int i = 0; i < this.vector.length; i++) {
-                this.vector[i] /= divider;
+            for (int i = 0; i < point.vector.length; i++) {
+                point.vector[i] /= divider;
             }
         }
-        return this;
+        return point;
     }
 
-    // TODO prendre un facteur de multiplication et l'appliquer. FAIT?
+    // Prendre un facteur de multiplication et l'appliquer
     @Override
     public Point2d multiply(Double multiplier) {
-        for (int i = 0; i < this.vector.length ; i++) {
-            this.vector[i] *= multiplier;
+        Point2d point = new Point2d(this.vector);
+
+        for (int i = 0; i < point.vector.length ; i++) {
+            point.vector[i] *= multiplier;
         }
 
-        return this;
+        return point;
     }
 
     // TODO prendre un facteur d'addition et l'appliquer. FAIT?
     @Override
     public Point2d add(Double adder) {
-        for (int i = 0; i < this.vector.length; i++) {
-            this.vector[i] += adder;
+        Point2d point = new Point2d(this.vector);
+        for (int i = 0; i < point.vector.length; i++) {
+            point.vector[i] += adder;
         }
-        return this;
+        return point;
     }
 
-    // TODO creer un nouveau point. FAIT?
+    // Creer un nouveau point
     @Override
     public Point2d clone() {
-        Point2d objetClone = this;
+        Point2d objetClone = new Point2d(this.vector);
         return objetClone;
     }
 }
