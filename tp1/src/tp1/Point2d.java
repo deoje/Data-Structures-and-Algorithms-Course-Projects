@@ -42,14 +42,14 @@ public class Point2d extends AbstractPoint {
     // Prend un vecteur de donnees et appliquer la rotation.
     @Override
     public Point2d rotate(Double[][] rotationMatrix) {
-        Double[] rotatedVector = new Double[this.vector.length];
+        Double[] rotatedVector = new Double[vector.length];
         double coordinate;
         // Assuming square matrix
-        if (this.vector.length == rotationMatrix.length) {
+        if (vector.length == rotationMatrix.length) {
             for (int i = 0; i < rotationMatrix.length; i++) {
                 coordinate = 0;
                 for (int j = 0; j < rotationMatrix[i].length; j++) {
-                    coordinate += rotationMatrix[i][j] * this.vector[j];
+                    coordinate += rotationMatrix[i][j] * vector[j];
                 }
                 rotatedVector[i] = coordinate;
             }

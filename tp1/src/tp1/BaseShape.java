@@ -53,10 +53,9 @@ public class BaseShape {
 
     // TODO appliquer la translation sur la liste.
     public Set<Point2d> translateAll(Point2d point) {
-        Set<Point2d> translatedCoords = getCoords();
-        Iterator<Point2d> it = translatedCoords.iterator();
-        while (it.hasNext()){
-            it.next().translate(point);
+        Set<Point2d> translatedCoords = new HashSet<>();
+        for (Point2d point2d : getCoords()) {
+            translatedCoords.add(point2d.translate(point));
         }
         return translatedCoords;
     }
@@ -68,10 +67,9 @@ public class BaseShape {
 
     // Applique la rotation sur la liste
     public Set<Point2d> rotateAll(Double angle) {
-        Set<Point2d> rotatedCoords = getCoords();
-        Iterator<Point2d> it = rotatedCoords.iterator();
-        while (it.hasNext()){
-            it.next().rotate(angle);
+        Set<Point2d> rotatedCoords = new HashSet<>();
+        for (Point2d point2d : getCoords()) {
+            rotatedCoords.add(point2d.rotate(angle));
         }
         return rotatedCoords;
     }
