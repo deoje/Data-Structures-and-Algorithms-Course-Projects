@@ -3,35 +3,47 @@ package tp1;
 import java.util.Set;
 
 public class Rectangle extends BaseShape {
-    // TODO creer un rectangle avec une largeur et une longueur.
+    // Cree un rectangle avec une largeur et une longueur.
     public Rectangle(Double width, Double height) {
-        // ...
+        super(Set.of(
+                new Point2d(width / 2.0, height / 2.0),
+                new Point2d(- width / 2.0, height / 2.0),
+                new Point2d(- width / 2.0, - height / 2.0),
+                new Point2d(width / 2.0, - height / 2.0)
+            )
+        );
     }
 
-    // TODO creer un rectangle avec un point contenant la largeur et longueur.
+    // Creer un rectangle avec un point contenant la largeur et longueur.
     public Rectangle(Point2d dimensions) {
-        // ...
+        super(Set.of(
+                new Point2d(dimensions.X() / 2.0, dimensions.Y() / 2.0),
+                new Point2d(- dimensions.X() / 2.0, dimensions.Y() / 2.0),
+                new Point2d(- dimensions.X() / 2.0,  - dimensions.Y() / 2.0),
+                new Point2d(dimensions.X() / 2.0, - dimensions.Y() / 2.0)
+            )
+        );
     }
 
     private Rectangle(Set<Point2d> coords) {
         super(coords);
     }
 
-    // TODO appliquer la translation sur la forme.
+    // Appliquer la translation sur la forme
     @Override
     public Rectangle translate(Point2d point) {
-        return null;
+        return new Rectangle(super.translate(point).getCoords());
     }
 
-    // TODO appliquer la rotation sur la forme.
+    // Appliquer la rotation sur la forme
     @Override
     public Rectangle rotate(Double angle) {
-        return null;
+        return new Rectangle(super.rotate(angle).getCoords());
     }
 
-    // TODO retourner une nouvelle forme.
+    // Retourne une nouvelle forme.
     @Override
     public Rectangle clone() {
-        return null;
+        return new Rectangle(this.getCoords());
     }
 }
