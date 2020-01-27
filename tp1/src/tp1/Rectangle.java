@@ -1,28 +1,29 @@
 package tp1;
 
+import java.lang.reflect.Array;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Rectangle extends BaseShape {
     // Cree un rectangle avec une largeur et une longueur.
     public Rectangle(Double width, Double height) {
-        super(Set.of(
-                new Point2d(width / 2.0, height / 2.0),
-                new Point2d(- width / 2.0, height / 2.0),
-                new Point2d(- width / 2.0, - height / 2.0),
-                new Point2d(width / 2.0, - height / 2.0)
-            )
-        );
+        super();
+        for (double i =  - width / 2; i < width / 2; i++) {
+            for (double j =  - height / 2; j < height / 2; j++) {
+                add(new Point2d(i,j));
+            }
+        }
     }
 
     // Creer un rectangle avec un point contenant la largeur et longueur.
     public Rectangle(Point2d dimensions) {
-        super(Set.of(
-                new Point2d(dimensions.X() / 2.0, dimensions.Y() / 2.0),
-                new Point2d(- dimensions.X() / 2.0, dimensions.Y() / 2.0),
-                new Point2d(- dimensions.X() / 2.0,  - dimensions.Y() / 2.0),
-                new Point2d(dimensions.X() / 2.0, - dimensions.Y() / 2.0)
-            )
-        );
+        super();
+        for (double i = - dimensions.X() / 2; i < dimensions.X() / 2; i++){
+            for (double j = - dimensions.Y() / 2; j < dimensions.Y() / 2; j++){
+                add(new Point2d(i,j));
+            }
+        }
     }
 
     private Rectangle(Set<Point2d> coords) {

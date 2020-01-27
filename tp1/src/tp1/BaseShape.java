@@ -41,7 +41,7 @@ public class BaseShape {
         this.coords.removeAll(new HashSet<>(coords));
     }
 
-    // TODO retourne les coordonnees de la liste
+    // Retourne les coordonnees de la liste
     public Set<Point2d> getCoords() {
         return new HashSet<>(coords);
     }
@@ -51,7 +51,7 @@ public class BaseShape {
         return new BaseShape(this.translateAll(point));
     }
 
-    // TODO appliquer la translation sur la liste.
+    // Appliquer la translation sur la liste.
     public Set<Point2d> translateAll(Point2d point) {
         Set<Point2d> translatedCoords = new HashSet<>();
         for (Point2d point2d : getCoords()) {
