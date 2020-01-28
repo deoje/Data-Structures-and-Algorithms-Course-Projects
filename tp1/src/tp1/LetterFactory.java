@@ -21,7 +21,6 @@ public final class LetterFactory {
         return leftVerticalStripe;
     }
 
-    // FIXME
     public static BaseShape create_e() {
         BaseShape ellipse = new Ellipse(maxWidth / 2.0, halfMaxHeight);
         ellipse.removeAll(Ellipse.ellipseParametricEquationPoints(
@@ -55,8 +54,7 @@ public final class LetterFactory {
         leftStripe.add(rightStripe);
         return leftStripe;
     }
-
-    // FIXME
+    
     public static BaseShape create_r() {
         BaseShape ellipse = new Ellipse(maxWidth / 2.0, halfMaxHeight / 2.0);
         ellipse.removeAll(Ellipse.ellipseParametricEquationPoints(

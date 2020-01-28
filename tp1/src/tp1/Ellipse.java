@@ -6,12 +6,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Ellipse extends BaseShape {
+    final static double ellipseThickness = 20;
+
     // Cree une ellipse avec une largeur et une longueur.
-    // FIXME: add more thickness
     public Ellipse(Double widthRadius, Double heightRadius) {
         super();
         for (double i = 0.0; i < 2 * Math.PI; i += (2 * Math.PI) / 100) {
-            add(new Point2d(widthRadius * Math.cos(i), heightRadius * Math.sin(i)));
+            for (double wR = widthRadius - ellipseThickness, hR = heightRadius - ellipseThickness;
+                 wR < widthRadius + 1 && hR < heightRadius + 1; wR++,hR++) {
+                add(new Point2d(wR * Math.cos(i),  hR * Math.sin(i)));
+            }
         }
         remove(new Point2d(0.0,0.0));
     }
@@ -39,12 +43,13 @@ public class Ellipse extends BaseShape {
     // Returns a set of n points calculated from the parametric equation of an ellipse
     public static Set<Point2d> ellipseParametricEquationPoints(
             double widthRadius, double heightRadius, double numberOfSectors, double from, double upTo) {
-
         Set<Point2d> coords = new HashSet<>();
         for (double i = from; i < upTo; i += (2 * Math.PI) / numberOfSectors) {
-            coords.add(new Point2d(widthRadius * Math.cos(i), heightRadius * Math.sin(i)));
+            for (double wR = widthRadius - ellipseThickness, hR = heightRadius - ellipseThickness;
+                 wR < widthRadius + 1 && hR < heightRadius + 1; wR++,hR++) {
+                coords.add(new Point2d(wR * Math.cos(i),  hR * Math.sin(i)));
+            }
         }
         return coords;
-
     }
 }
