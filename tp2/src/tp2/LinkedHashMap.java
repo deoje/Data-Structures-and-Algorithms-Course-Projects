@@ -39,6 +39,27 @@ public class LinkedHashMap<KeyType, DataType> {
      * reassigns all contained values within the new map
      */
     private void rehash() {
+        capacity *= CAPACITY_INCREASE_FACTOR; //On double la capacité , voir apres si on veut nombre premier
+
+        Node<KeyType, DataType>[] map2 = new Node[capacity];  ;
+        //On créé une nouvelle map vide avec la nouvelle capacité. Utiliser LinkedHashMap(int capacity)?
+
+        for( int i =0; i< map.length; i++) { //On part à la recherche des Key de la premiere map pour les replacer dans la nouvelle
+            while(map[i] != null && map[i].next != null){ //On continue dans le node [i] tant qu'il y a un next
+                int index = getIndex(map[i].key); // Trouve le nouvel index pour la nouvelle capacité
+
+                if(map2[index].key == null)
+                    map2[index] = new Node<>(map[i].key,map[i].data);
+                else{
+                    map2[index].next = map2[index];
+                    map2[index] = new Node<>(map[i].key,map[i].data);
+                }
+
+                map[i] = map[i].next; // Passe a la prochaine case du node [i]
+            }
+        }
+        map = new Node[capacity];
+        map = map2;
     }
 
     public int size() {
