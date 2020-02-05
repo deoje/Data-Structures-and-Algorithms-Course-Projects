@@ -50,14 +50,15 @@ public class LinkedHashMap<KeyType, DataType> {
             while(map[i] != null && map[i].next != null){ //On continue dans le node [i] tant qu'il y a un next
                 int index = getIndex(map[i].key); // Trouve le nouvel index pour la nouvelle capacité
 
-                if(map2[index].key == null)
-                    map2[index] = new Node<>(map[i].key,map[i].data);
-                else{
-                    map2[index].next = map2[index];
-                    map2[index] = new Node<>(map[i].key,map[i].data);
+                if(map2[index] == null) {
+                    map2[index] = new Node<>(map[i].key, map[i].data);
                 }
-
-                map[i] = map[i].next; // Passe a la prochaine case du node [i]
+                else{
+                    Node<KeyType, DataType> NouvellePremiereCase = new Node<>(map[i].key, map[i].data);
+                    NouvellePremiereCase.next = map2[index]; //Nouvelle case pointe sur la premiere
+                    map2[index] = NouvellePremiereCase; //Nouvelle case devient la premiere du node
+                }
+                map[i] = map[i].next; // Passe a la prochaine case du node [i] de la map initiale
             }
         }
         map = new Node[capacity];
@@ -100,20 +101,20 @@ public class LinkedHashMap<KeyType, DataType> {
      * @return Old DataType instance at key (null if none existed)
      */
     public DataType put(KeyType key, DataType value) {
-//        if (shouldRehash()){
-//
-//        } else {
-//            int idx = getIndex(key);
-//            Node<KeyType, DataType> newNode = new Node<>(key,value);
-//            if (map[idx] != null) {
-//                Node<KeyType,DataType> currentNode = map[idx];
-//                while (currentNode.next != null)
-//                    currentNode = currentNode.next;
-//                currentNode.next = newNode;
-//            } else {
-//                map[idx] = newNode;
-//            }
-//        }
+        if (shouldRehash()){
+
+        } else {
+            int idx = getIndex(key);
+            Node<KeyType, DataType> newNode = new Node<>(key,value);
+            if (map[idx] != null) {
+                Node<KeyType,DataType> currentNode = map[idx];
+                while (currentNode.next != null)
+                    currentNode = currentNode.next;
+                currentNode.next = newNode;
+            } else {
+                map[idx] = newNode;
+            }
+        }
         return null;
     }
 
