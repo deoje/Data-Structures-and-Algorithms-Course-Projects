@@ -1,5 +1,7 @@
 package tp2;
 
+import java.util.Arrays;
+
 public class LinkedHashMap<KeyType, DataType> {
 
     private static final double COMPRESSION_FACTOR = 2; // 50%
@@ -77,23 +79,48 @@ public class LinkedHashMap<KeyType, DataType> {
      * @return Old DataType instance at key (null if none existed)
      */
     public DataType put(KeyType key, DataType value) {
+//        if (shouldRehash()){
+//
+//        } else {
+//            int idx = getIndex(key);
+//            Node<KeyType, DataType> newNode = new Node<>(key,value);
+//            if (map[idx] != null) {
+//                Node<KeyType,DataType> currentNode = map[idx];
+//                while (currentNode.next != null)
+//                    currentNode = currentNode.next;
+//                currentNode.next = newNode;
+//            } else {
+//                map[idx] = newNode;
+//            }
+//        }
         return null;
     }
 
-    /** TODO
+    /** TODO: Test Me
      * Removes the node attached to a key
      * @param key Key which is contained in the node to remove
      * @return Old DataType instance at key (null if none existed)
      */
+    // Return the first node's data of the linked list at the given index
+    // the second node of the linked list becomes the first one
     public DataType remove(KeyType key) {
+        if (containsKey(key)){
+            int idx = getIndex(key);
+            Node<KeyType,DataType> node = map[idx];
+            map[idx] = node.next;
+            return node.data;
+        }
+
         return null;
     }
 
-    /** TODO
+    /** TODO: Test Me
      * Removes all nodes contained within the map
      */
     public void clear() {
-
+        // Test asks for a map of same initial size and filled
+        // with null objects
+        Arrays.fill(map,null);
     }
 
 
