@@ -55,7 +55,7 @@ public class LinkedHashMap<KeyType, DataType> {
         return size == 0;
     }
 
-    /** TODO
+    /**
      * Finds if map contains a key
      * @param key Key which we want to know if exists within map
      * @return if key is already used in map
@@ -66,11 +66,10 @@ public class LinkedHashMap<KeyType, DataType> {
 
         // 2) Verify if there's actually a list
         if (map[idx] != null){
-
             Node node = map[idx];
             boolean foundKey;
             do {
-                foundKey = (node.key == key);
+                foundKey = (node.key.equals(key));
                 if (foundKey)
                         break;
                 node = node.next;
@@ -82,78 +81,100 @@ public class LinkedHashMap<KeyType, DataType> {
         return false;
     }
 
-    /** TODO
+    /**
      * Finds the value attached to a key
      * @param key Key which we want to have its value
      * @return DataType instance attached to key (null if not found)
      */
     public DataType get(KeyType key) {
-        return null;
+
+        if (!containsKey(key)) {
+            return null;
+        }
+
+        Node node = map[getIndex(key)];
+        boolean foundKey;
+        DataType data = null;
+        do {
+            foundKey = (node.key.equals(key));
+            if (foundKey)
+                data = (DataType) node.data;
+            node = node.next;
+        } while (node != null);
+
+        return data;
     }
 
-    /** TODO: TEST ME
+    /**
      * Assigns a value to a key
      * @param key Key which will have its value assigned or reassigned
      * @return Old DataType instance at key (null if none existed)
      */
     public DataType put(KeyType key, DataType value) {
+
+        if (shouldRehash())
+            rehash();
+
         int idx = getIndex(key);
-        if (containsKey(key)){
-            DataType oldData;
-            Node node = map[idx];
-            if (node.key == key){
-                oldData = (DataType) node.data;
-                node.data = value;
-            } else {
-                Node nextNode = node.next;
-                while (nextNode.key != key){
-                    node = nextNode;
-                    nextNode = node.next;
-                }
-                oldData = (DataType) nextNode.data;
-                nextNode.data = value;
-            }
-            return oldData;
+
+        if (map[idx] == null){
+            map[idx] = new Node<>(key,value);
         } else {
-            if (map[idx] != null) {
-                Node newNode = new Node<>(key, value);
-                newNode.next = map[idx];
-                map[idx] = newNode;
-            } else {
-                map[idx] = new Node<>(key, value);
-            }
+            Node<KeyType,DataType> node = map[idx];
+            boolean foundKey;
+            do {
+                foundKey = (node.key.equals(key));
+                if (foundKey){
+                    DataType oldData = node.data;
+                    node.data = value;
+                    return oldData;
+                }
+                node = node.next;
+            } while (node != null);
+
+            Node<KeyType,DataType> newNode = new Node<>(key,value);
+            newNode.next = map[idx];
+            map[idx] = newNode;
         }
+        size++;
         return null;
     }
 
-    /** TODO: Test Me
+    /**
      * Removes the node attached to a key
      * @param key Key which is contained in the node to remove
      * @return Old DataType instance at key (null if none existed)
      */
     public DataType remove(KeyType key) {
-        if (containsKey(key)){
-            int idx = getIndex(key);
-            Node node = map[idx];
-            if (node.key != key){
-                Node nextNode = node.next;
-                while (nextNode.key != key){
-                    node = nextNode;
-                    nextNode = nextNode.next;
-                }
-                node.next = nextNode.next;
-                System.out.println(nextNode.data);
-                return (DataType) nextNode.data;
-            } else {
-                DataType oldData = (DataType) node.data;
-                map[idx] = node.next;
-                return oldData;
-            }
+
+        if (!containsKey(key))
+            return null;
+
+        int idx = getIndex(key);
+        Node<KeyType,DataType> node = map[idx];
+        Node<KeyType,DataType> nextNode = node.next;
+        boolean keysMatch = (node.key.equals(key));
+        DataType oldData = null;
+        if (keysMatch){
+            oldData = node.data;
+            map[idx] = nextNode;
+            nextNode = null;
         }
-        return null;
+        while (nextNode != null){
+            keysMatch = (nextNode.key.equals(key));
+            if (keysMatch){
+                oldData = nextNode.data;
+                node.next = nextNode.next;
+                break;
+            }
+            node = nextNode;
+            nextNode = node.next;
+        }
+        size--;
+        return oldData;
     }
 
-    /** TODO: Test Me
+    /**
      * Removes all nodes contained within the map
      */
     public void clear() {
