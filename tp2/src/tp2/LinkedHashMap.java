@@ -61,6 +61,24 @@ public class LinkedHashMap<KeyType, DataType> {
      * @return if key is already used in map
      */
     public boolean containsKey(KeyType key) {
+        // 1) Use getIndex to determine which list to traverse
+        int idx = getIndex(key);
+
+        // 2) Verify if there's actually a list
+        if (map[idx] != null){
+
+            Node node = map[idx];
+            boolean foundKey;
+            do {
+                foundKey = (node.key == key);
+                if (foundKey)
+                        break;
+                node = node.next;
+            } while (node != null);
+            return foundKey;
+
+        }
+        // No list at corresponding index thus no item with that key
         return false;
     }
 
@@ -73,26 +91,38 @@ public class LinkedHashMap<KeyType, DataType> {
         return null;
     }
 
-    /** TODO
+    /** TODO: TEST ME
      * Assigns a value to a key
      * @param key Key which will have its value assigned or reassigned
      * @return Old DataType instance at key (null if none existed)
      */
     public DataType put(KeyType key, DataType value) {
-//        if (shouldRehash()){
-//
-//        } else {
-//            int idx = getIndex(key);
-//            Node<KeyType, DataType> newNode = new Node<>(key,value);
-//            if (map[idx] != null) {
-//                Node<KeyType,DataType> currentNode = map[idx];
-//                while (currentNode.next != null)
-//                    currentNode = currentNode.next;
-//                currentNode.next = newNode;
-//            } else {
-//                map[idx] = newNode;
-//            }
-//        }
+        int idx = getIndex(key);
+        if (containsKey(key)){
+            DataType oldData;
+            Node node = map[idx];
+            if (node.key == key){
+                oldData = (DataType) node.data;
+                node.data = value;
+            } else {
+                Node nextNode = node.next;
+                while (nextNode.key != key){
+                    node = nextNode;
+                    nextNode = node.next;
+                }
+                oldData = (DataType) nextNode.data;
+                nextNode.data = value;
+            }
+            return oldData;
+        } else {
+            if (map[idx] != null) {
+                Node newNode = new Node<>(key, value);
+                newNode.next = map[idx];
+                map[idx] = newNode;
+            } else {
+                map[idx] = new Node<>(key, value);
+            }
+        }
         return null;
     }
 
@@ -101,16 +131,25 @@ public class LinkedHashMap<KeyType, DataType> {
      * @param key Key which is contained in the node to remove
      * @return Old DataType instance at key (null if none existed)
      */
-    // Return the first node's data of the linked list at the given index
-    // the second node of the linked list becomes the first one
     public DataType remove(KeyType key) {
         if (containsKey(key)){
             int idx = getIndex(key);
-            Node<KeyType,DataType> node = map[idx];
-            map[idx] = node.next;
-            return node.data;
+            Node node = map[idx];
+            if (node.key != key){
+                Node nextNode = node.next;
+                while (nextNode.key != key){
+                    node = nextNode;
+                    nextNode = nextNode.next;
+                }
+                node.next = nextNode.next;
+                System.out.println(nextNode.data);
+                return (DataType) nextNode.data;
+            } else {
+                DataType oldData = (DataType) node.data;
+                map[idx] = node.next;
+                return oldData;
+            }
         }
-
         return null;
     }
 
