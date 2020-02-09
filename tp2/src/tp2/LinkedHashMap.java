@@ -36,32 +36,42 @@ public class LinkedHashMap<KeyType, DataType> {
         return size * COMPRESSION_FACTOR > capacity;
     }
 
-    /** TODO
+    /**
      * Increases capacity by CAPACITY_INCREASE_FACTOR (multiplication) and
      * reassigns all contained values within the new map
      */
     private void rehash() {
-        capacity *= CAPACITY_INCREASE_FACTOR; //On double la capacité , voir apres si on veut nombre premier
+        // On double la capacité
+        capacity *= CAPACITY_INCREASE_FACTOR;
 
-        Node<KeyType, DataType>[] map2 = new Node[capacity];  ;
-        //On créé une nouvelle map vide avec la nouvelle capacité. Utiliser LinkedHashMap(int capacity)?
+        // On créé une nouvelle map vide avec la nouvelle capacité
+        Node<KeyType, DataType>[] map2 = new Node[capacity];
+        for (Node<KeyType, DataType> mapCell : map) {
 
-        for( int i =0; i< map.length; i++) { //On part à la recherche des Key de la premiere map pour les replacer dans la nouvelle
-            while(map[i] != null && map[i].next != null){ //On continue dans le node [i] tant qu'il y a un next
-                int index = getIndex(map[i].key); // Trouve le nouvel index pour la nouvelle capacité
+            if (mapCell == null)
+                continue;
 
-                if(map2[index] == null) {
-                    map2[index] = new Node<>(map[i].key, map[i].data);
+            Node node = mapCell;
+            do {
+                // Trouve le nouvel index pour la nouvelle capacité
+                int newIdx = getIndex((KeyType) node.key);
+
+                if (map2[newIdx] == null)
+                    map2[newIdx] = node;
+                else {
+                    Node neighborNode = map2[newIdx];
+
+                    while (neighborNode.next != null)
+                        neighborNode = neighborNode.next;
+
+                    neighborNode.next = node;
                 }
-                else{
-                    Node<KeyType, DataType> NouvellePremiereCase = new Node<>(map[i].key, map[i].data);
-                    NouvellePremiereCase.next = map2[index]; //Nouvelle case pointe sur la premiere
-                    map2[index] = NouvellePremiereCase; //Nouvelle case devient la premiere du node
-                }
-                map[i] = map[i].next; // Passe a la prochaine case du node [i] de la map initiale
-            }
+                node = node.next;
+
+            } while (node != null);
+
         }
-        map = new Node[capacity];
+
         map = map2;
     }
 
@@ -89,15 +99,14 @@ public class LinkedHashMap<KeyType, DataType> {
         // 2) Verify if there's actually a list
         if (map[idx] != null){
             Node node = map[idx];
-            boolean foundKey;
+
             do {
-                foundKey = (node.key.equals(key));
-                if (foundKey)
-                        break;
+                if (node.key.equals(key))
+                        return true;
                 node = node.next;
             } while (node != null);
-            return foundKey;
 
+            return false;
         }
         // No list at corresponding index thus no item with that key
         return false;
@@ -115,12 +124,12 @@ public class LinkedHashMap<KeyType, DataType> {
         }
 
         Node node = map[getIndex(key)];
-        boolean foundKey;
         DataType data = null;
         do {
-            foundKey = (node.key.equals(key));
-            if (foundKey)
+            if (node.key.equals(key)){
                 data = (DataType) node.data;
+                break;
+            }
             node = node.next;
         } while (node != null);
 
@@ -143,17 +152,14 @@ public class LinkedHashMap<KeyType, DataType> {
             map[idx] = new Node<>(key,value);
         } else {
             Node<KeyType,DataType> node = map[idx];
-            boolean foundKey;
             do {
-                foundKey = (node.key.equals(key));
-                if (foundKey){
+                if (node.key.equals(key)){
                     DataType oldData = node.data;
                     node.data = value;
                     return oldData;
                 }
                 node = node.next;
             } while (node != null);
-
             Node<KeyType,DataType> newNode = new Node<>(key,value);
             newNode.next = map[idx];
             map[idx] = newNode;
@@ -175,22 +181,21 @@ public class LinkedHashMap<KeyType, DataType> {
         int idx = getIndex(key);
         Node<KeyType,DataType> node = map[idx];
         Node<KeyType,DataType> nextNode = node.next;
-        boolean keysMatch = (node.key.equals(key));
         DataType oldData = null;
-        if (keysMatch){
+        if (node.key.equals(key)){
             oldData = node.data;
             map[idx] = nextNode;
-            nextNode = null;
-        }
-        while (nextNode != null){
-            keysMatch = (nextNode.key.equals(key));
-            if (keysMatch){
-                oldData = nextNode.data;
-                node.next = nextNode.next;
-                break;
+        } else {
+            while (nextNode != null){
+
+                if (nextNode.key.equals(key)){
+                    oldData = nextNode.data;
+                    node.next = nextNode.next;
+                    break;
+                }
+                node = nextNode;
+                nextNode = node.next;
             }
-            node = nextNode;
-            nextNode = node.next;
         }
         size--;
         return oldData;
