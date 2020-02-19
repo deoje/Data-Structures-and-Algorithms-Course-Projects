@@ -93,8 +93,32 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param currentNode Node currently being accessed in this recursive method
      * @return if parent node should balance
      */
-    private boolean insert (ValueType value, BinaryNode<ValueType> currentNode){
-        return false;
+    private boolean insert (ValueType value, BinaryNode<ValueType> currentNode){ // Recursive code from the course addapted
+
+        int compareResult = value.compareTo(currentNode.value);
+        boolean isImbalanced=false;
+        if(compareResult==0) return false;  // The value is already present in the tree, no duplication of a value so we do nothing
+
+        // Calculate the difference between the value and the current value to decide where to continue to search
+        if( compareResult< 0 ) // Difference negative, value is better than the actual nod -> go to left child
+            if(currentNode.left == null){ // Place of the child found!
+                currentNode.left = new BinaryNode<ValueType>(value, currentNode); // Place the child
+                return true;
+            }
+            else { // Continue to search the right place
+                isImbalanced=insert(value, currentNode.left);
+            }
+        else if( compareResult> 0 ) // Difference positive, value is lesser than the actual nod -> go to right child
+            if(currentNode.right == null){ // Place of the child found!
+                currentNode.right = new BinaryNode<ValueType>(value, currentNode); // Place the child\
+                 return true;
+            }
+            else { // Continue to search the right place
+                isImbalanced=insert(value, currentNode.right);
+            }
+
+        if(isImbalanced) balance(currentNode ); // Need to re balance to be sur to keep the O(log(n))
+        return true;
     }
 
     /** TODO O ( log n )
@@ -105,20 +129,30 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @return if parent node should balance
      */
     private boolean remove(ValueType value, BinaryNode<ValueType> currentNode) { // Recursive code from the course addapted
+
+        int compareResult = value.compareTo( currentNode.value); // Calculate the difference between the value and the current value to decide where to continue to search
+        boolean isImbalanced=false;
+
         if( currentNode == null)
             return false; // Arrived at the last possible node and value not there, return
-        int compareResult = value.compareTo( currentNode.value); // Calculate the difference between the value and the current value to decide where to continue to search
-        if( compareResult< 0 ) // Difference neg, value is better than the actual nod -> go to left child
-            remove( value, currentNode.left);
-        else if( compareResult> 0 ) // Difference pos, value is lesser than the actual nod -> go to right child
-            remove( value, currentNode.right);
-        else if( currentNode.left!= null&& currentNode.right!= null) { // Difference  = 0! If two children change the value with the minimum of the right tree like the course said
+
+        if( compareResult< 0 ) // Difference negative, value is better than the actual nod -> go to left child
+            isImbalanced = remove( value, currentNode.left);
+
+        else if( compareResult> 0 ) // Difference positive, value is lesser than the actual nod -> go to right child
+            isImbalanced = remove( value, currentNode.right);
+
+        else if( currentNode.left!= null&& currentNode.right!= null) { // Difference  = 0! If two children -> change the value of the current node with the minimum of the right tree like the course said
             currentNode.value= findMin( currentNode.right).value;
-            remove( currentNode.value, currentNode.right);
+            isImbalanced = remove( currentNode.value, currentNode.right);
         }
-        else
+
+        else{
             currentNode = ( currentNode.left!= null) ? currentNode.left: currentNode.right; // Lesser than two child then we just replace the current node by the child left or null
-        balance(currentNode); // Need to re balance to be sur to keep the O(log(n))
+            isImbalanced = true;
+        }
+
+        if(isImbalanced) balance(currentNode ); // Need to re balance to be sur to keep the O(log(n))
         return true;
     }
 
@@ -127,14 +161,18 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param subTree SubTree currently being accessed to verify if it respects the AVL balancing rule
      */
     private void balance(BinaryNode<ValueType> subTree) { // Code from the course addapted
+
         if( subTree == null) return; // End of the tree, no child to balance with
+
         if( getLevelCount( subTree.left) - getLevelCount( subTree.right) > 1 ){ // Not balanced, left too long
+
             if( getLevelCount( subTree.left.left) >= getLevelCount( subTree.left.right) ) // rotate appropriately
                 rotateLeft( subTree );
             else
                 doubleRotateOnLeftChild( subTree );
         }
         else if( getLevelCount( subTree.right) - getLevelCount( subTree.left) > 1 ){ // Not balanced, right too long
+
             if( getLevelCount( subTree.right.right) >= getLevelCount( subTree.right.left) ) // rotate appropriately
                 rotateRight( subTree );
             else
@@ -179,7 +217,30 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @return if value already exists in the root tree
      */
     private boolean contains(ValueType value, BinaryNode<ValueType> currentNode){
-        return false;
+        boolean valueThere = false;
+
+        int compareResult = value.compareTo( currentNode.value); // Calculate the difference between the value and the current value to decide where to continue to search
+
+        if( compareResult< 0 ) { // Difference negative, value is better than the actual nod -> go to left child
+            if (currentNode.left == null) {
+                return false; // Arrived at the last possible node and value not there, return false
+            }
+            else {// Continue the research
+                contains(value, currentNode.left);
+            }
+        }
+        else if( compareResult> 0 ) { // Difference positive, value is lesser than the actual nod -> go to right child
+            if (currentNode.right == null) {
+                return false; // Arrived at the last possible node and value not there, return false
+            }
+            else {// Continue the research
+                contains(value, currentNode.left);
+            }
+        }
+        else {// Difference  = 0! value found yay \o/
+            valueThere =  true;
+        }
+        return valueThere;
     }
 
     /** TODO O( n )
