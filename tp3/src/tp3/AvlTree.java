@@ -24,7 +24,7 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
 
     /**
      * Removes value from the tree and keeps it as a balanced AVL Tree
-     * @param value value to add to the tree
+     * @param value value to remove from the tree
      */
     public void remove(ValueType value){
         remove(value, root);
@@ -104,15 +104,44 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param currentNode Node currently being accessed in this recursive method
      * @return if parent node should balance
      */
-    private boolean remove(ValueType value, BinaryNode<ValueType> currentNode) {
-        return false;
+    private boolean remove(ValueType value, BinaryNode<ValueType> currentNode) { // Recursive code from the course addapted
+        if( currentNode == null)
+            return false; // Arrived at the last possible node and value not there, return
+        int compareResult = value.compareTo( currentNode.value); // Calculate the difference between the value and the current value to decide where to continue to search
+        if( compareResult< 0 ) // Difference neg, value is better than the actual nod -> go to left child
+            remove( value, currentNode.left);
+        else if( compareResult> 0 ) // Difference pos, value is lesser than the actual nod -> go to right child
+            remove( value, currentNode.right);
+        else if( currentNode.left!= null&& currentNode.right!= null) { // Difference  = 0! If two children change the value with the minimum of the right tree like the course said
+            currentNode.value= findMin( currentNode.right).value;
+            remove( currentNode.value, currentNode.right);
+        }
+        else
+            currentNode = ( currentNode.left!= null) ? currentNode.left: currentNode.right; // Lesser than two child then we just replace the current node by the child left or null
+        balance(currentNode); // Need to re balance to be sur to keep the O(log(n))
+        return true;
     }
 
     /** TODO O( n )
      * Balances the subTree
      * @param subTree SubTree currently being accessed to verify if it respects the AVL balancing rule
      */
-    private void balance(BinaryNode<ValueType> subTree) {
+    private void balance(BinaryNode<ValueType> subTree) { // Code from the course addapted
+        if( subTree == null) return; // End of the tree, no child to balance with
+        if( getLevelCount( subTree.left) - getLevelCount( subTree.right) > 1 ){ // Not balanced, left too long
+            if( getLevelCount( subTree.left.left) >= getLevelCount( subTree.left.right) ) // rotate appropriately
+                rotateLeft( subTree );
+            else
+                doubleRotateOnLeftChild( subTree );
+        }
+        else if( getLevelCount( subTree.right) - getLevelCount( subTree.left) > 1 ){ // Not balanced, right too long
+            if( getLevelCount( subTree.right.right) >= getLevelCount( subTree.right.left) ) // rotate appropriately
+                rotateRight( subTree );
+            else
+                doubleRotateOnRightChild( subTree );
+        }
+        //subTree.height = Math.max( getLevelCount( subTree.left), getLevelCount( subTree.right) ) + 1;  In the course but does't seem to apply
+        return;
     }
 
     /** TODO O( 1 )
