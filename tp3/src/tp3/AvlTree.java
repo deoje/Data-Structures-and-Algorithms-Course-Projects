@@ -187,6 +187,9 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param node1 Node to become child of its left child
      */
     private void rotateLeft(BinaryNode<ValueType> node1){
+        node1.left.parent = node1.parent; //child take node parent
+        node1.parent = node1.left; //child become node1 parent
+        node1.left = node1;
     }
 
     /** TODO O( 1 )
@@ -194,6 +197,9 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param node1 Node to become child of its right child
      */
     private void rotateRight(BinaryNode<ValueType> node1){
+        node1.right.parent = node1.parent; //child take node parent
+        node1.parent = node1.right; //child become node1 parent
+        node1.right = node1;
     }
 
     /** TODO O( 1 )
@@ -201,6 +207,8 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param node1 Node to become child of the right child of its left child
      */
     private void doubleRotateOnLeftChild(BinaryNode<ValueType> node1){
+       rotateLeft(node1);
+       rotateRight(node1.left);
     }
 
     /** TODO O( 1 )
@@ -208,6 +216,8 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param node1 Node to become child of the left child of its right child
      */
     private void doubleRotateOnRightChild(BinaryNode<ValueType> node1){
+        rotateRight(node1);
+        rotateLeft(node1.right);
     }
 
     /** TODO O( log n )
@@ -248,7 +258,11 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @return Number of level contained in subTree including subTree node level
      */
     private int getLevelCount(BinaryNode<ValueType> subTree){
-        return 0;
+        int level = 1;
+        while (subTree.right != null || subTree.left!= null) {
+            //no idea, not recursive
+        }
+        return level;
     }
 
     /** TODO O( log n )
@@ -256,7 +270,10 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @return Node which has the minimal value contained in our root tree
      */
     private BinaryNode<ValueType> findMin(BinaryNode<ValueType> currentNode) {
-        return null;
+        if (currentNode.left != null)
+            return findMin(currentNode.left); // so we go to the minimum node
+        else
+            return currentNode; // no more child, we are at the bottom left so the minimum
     }
 
     /** TODO O( n )
@@ -265,6 +282,18 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param items List being modified to contain all values in the root tree in ascending order
      */
     private void infixOrder(BinaryNode<ValueType> currentNode, List<ValueType> items){
+        while (  (currentNode.right != null || currentNode.left!= null) &&    // while the child exist and are not already in items
+                !(  items.contains(currentNode.left.value) && items.contains(currentNode.right.value)  )  ) {
+            if (currentNode.left != null && !items.contains(currentNode.left.value) ){ // left child not yet in items
+                infixOrder(currentNode.left,items); // go gettem
+                items.add(currentNode.value); // so we keep the order left->parent->right, the ascendant order
+            }
+            else if (currentNode.right != null && !items.contains(currentNode.right.value)) // right child is the one we didn't added yet
+                infixOrder(currentNode.right,items);
+        }
+        if (!items.contains(currentNode.value)){
+            items.add(currentNode.value);
+        }
     }
 
     /** TODO O( n )
@@ -273,6 +302,7 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param items List being modified to contain all values in the root tree in level order from top to bottom
      */
     private void levelOrder(ArrayDeque<BinaryNode<ValueType>> nodesToCheck, List<ValueType> items) {
+        //not sure of what is asked
     }
     
     static class BinaryNode<ValueType> {
