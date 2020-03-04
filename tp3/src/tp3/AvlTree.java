@@ -187,9 +187,13 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param node1 Node to become child of its left child
      */
     private void rotateLeft(BinaryNode<ValueType> node1){
+//        BinaryNode<ValueType> k1 = k2.left;
+//        k2.left = k1.right;
+//        k1.right = k2;
         node1.left.parent = node1.parent; //child take node parent
         node1.parent = node1.left; //child become node1 parent
-        node1.left = node1;
+        node1.left = node1.left.right;
+        node1.left.right.parent = node1;
     }
 
     /** TODO O( 1 )
@@ -270,10 +274,12 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @return Node which has the minimal value contained in our root tree
      */
     private BinaryNode<ValueType> findMin(BinaryNode<ValueType> currentNode) {
-        if (currentNode.left != null)
-            return findMin(currentNode.left); // so we go to the minimum node
-        else
-            return currentNode; // no more child, we are at the bottom left so the minimum
+        if (currentNode == null)
+            return  null;
+        else if (currentNode.left == null)
+            return currentNode;
+
+        return findMin(currentNode.left);
     }
 
     /** TODO O( n )
@@ -302,7 +308,23 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param items List being modified to contain all values in the root tree in level order from top to bottom
      */
     private void levelOrder(ArrayDeque<BinaryNode<ValueType>> nodesToCheck, List<ValueType> items) {
-        //not sure of what is asked
+        // First node to process
+        BinaryNode<ValueType> currentNode = root;
+
+        while (currentNode != null){
+            //Print value
+            System.out.println(currentNode.value);
+
+            // Add children from left to right
+            if (currentNode.left != null)
+                nodesToCheck.add(currentNode.left);
+            if (currentNode.right != null)
+                nodesToCheck.add(currentNode.right);
+
+            // Pop the following node to process (FIFO)
+            currentNode = nodesToCheck.pop();
+        }
+
     }
     
     static class BinaryNode<ValueType> {
