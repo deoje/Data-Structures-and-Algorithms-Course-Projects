@@ -94,31 +94,32 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @return if parent node should balance
      */
     private boolean insert (ValueType value, BinaryNode<ValueType> currentNode){ // Recursive code from the course addapted
-
-        int compareResult = value.compareTo(currentNode.value);
-        boolean isImbalanced=false;
-        if(compareResult==0) return false;  // The value is already present in the tree, no duplication of a value so we do nothing
-
-        // Calculate the difference between the value and the current value to decide where to continue to search
-        if( compareResult< 0 ) // Difference negative, value is better than the actual nod -> go to left child
-            if(currentNode.left == null){ // Place of the child found!
-                currentNode.left = new BinaryNode<ValueType>(value, currentNode); // Place the child
-                return true;
-            }
-            else { // Continue to search the right place
-                isImbalanced=insert(value, currentNode.left);
-            }
-        else if( compareResult> 0 ) // Difference positive, value is lesser than the actual nod -> go to right child
-            if(currentNode.right == null){ // Place of the child found!
-                currentNode.right = new BinaryNode<ValueType>(value, currentNode); // Place the child\
-                 return true;
-            }
-            else { // Continue to search the right place
-                isImbalanced=insert(value, currentNode.right);
-            }
-
-        if(isImbalanced) balance(currentNode ); // Need to re balance to be sur to keep the O(log(n))
-        return true;
+//
+//        int compareResult = value.compareTo(currentNode.value);
+//        boolean isImbalanced=false;
+//        if(compareResult==0) return false;  // The value is already present in the tree, no duplication of a value so we do nothing
+//
+//        // Calculate the difference between the value and the current value to decide where to continue to search
+//        if( compareResult< 0 ) // Difference negative, value is better than the actual nod -> go to left child
+//            if(currentNode.left == null){ // Place of the child found!
+//                currentNode.left = new BinaryNode<ValueType>(value, currentNode); // Place the child
+//                return true;
+//            }
+//            else { // Continue to search the right place
+//                isImbalanced=insert(value, currentNode.left);
+//            }
+//        else if( compareResult> 0 ) // Difference positive, value is lesser than the actual nod -> go to right child
+//            if(currentNode.right == null){ // Place of the child found!
+//                currentNode.right = new BinaryNode<ValueType>(value, currentNode); // Place the child\
+//                 return true;
+//            }
+//            else { // Continue to search the right place
+//                isImbalanced=insert(value, currentNode.right);
+//            }
+//
+//        if(isImbalanced) balance(currentNode ); // Need to re balance to be sur to keep the O(log(n))
+//        return true;
+        return false;
     }
 
     /** TODO O ( log n )
@@ -130,29 +131,32 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      */
     private boolean remove(ValueType value, BinaryNode<ValueType> currentNode) { // Recursive code from the course addapted
 
-        int compareResult = value.compareTo( currentNode.value); // Calculate the difference between the value and the current value to decide where to continue to search
-        boolean isImbalanced=false;
+        if (currentNode == null)
+            return false;
 
-        if( currentNode == null)
-            return false; // Arrived at the last possible node and value not there, return
+        boolean isImbalanced = false;
+        int compareResult = value.compareTo(currentNode.value);
 
-        if( compareResult< 0 ) // Difference negative, value is better than the actual nod -> go to left child
-            isImbalanced = remove( value, currentNode.left);
-
-        else if( compareResult> 0 ) // Difference positive, value is lesser than the actual nod -> go to right child
+        if (compareResult < 0)
+             isImbalanced = remove( value, currentNode.left);
+        else if (compareResult > 0)
             isImbalanced = remove( value, currentNode.right);
-
-        else if( currentNode.left!= null&& currentNode.right!= null) { // Difference  = 0! If two children -> change the value of the current node with the minimum of the right tree like the course said
-            currentNode.value= findMin( currentNode.right).value;
-            isImbalanced = remove( currentNode.value, currentNode.right);
+        else {
+            if (currentNode.left != null && currentNode.right != null){
+                currentNode.value = findMin(currentNode.right).value;
+                isImbalanced = remove(currentNode.value, currentNode.right);
+            } else {
+                if (currentNode.left == null) {
+                    currentNode.right.parent = currentNode.parent;
+                    currentNode = currentNode.right;
+                } else {
+                    currentNode.left.parent = currentNode.parent;
+                    currentNode = currentNode.left;
+                }
+                isImbalanced = true;
+            }
         }
-
-        else{
-            currentNode = ( currentNode.left!= null) ? currentNode.left: currentNode.right; // Lesser than two child then we just replace the current node by the child left or null
-            isImbalanced = true;
-        }
-
-        if(isImbalanced) balance(currentNode ); // Need to re balance to be sur to keep the O(log(n))
+        if (isImbalanced) balance(currentNode);
         return true;
     }
 
@@ -162,24 +166,27 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      */
     private void balance(BinaryNode<ValueType> subTree) { // Code from the course addapted
 
-        if( subTree == null) return; // End of the tree, no child to balance with
+        if (subTree == null)
+            return;
 
-        if( getLevelCount( subTree.left) - getLevelCount( subTree.right) > 1 ){ // Not balanced, left too long
-
-            if( getLevelCount( subTree.left.left) >= getLevelCount( subTree.left.right) ) // rotate appropriately
-                rotateLeft( subTree );
+        if ( getLevelCount(subTree.left) - getLevelCount(subTree.right) > 1 )
+        {
+            // Left-Left case
+            if (getLevelCount(subTree.left.left) >= getLevelCount(subTree.left.right) )
+                rotateLeft(subTree);
+            // Left-Right case
             else
-                doubleRotateOnLeftChild( subTree );
+                doubleRotateOnLeftChild(subTree);
         }
-        else if( getLevelCount( subTree.right) - getLevelCount( subTree.left) > 1 ){ // Not balanced, right too long
-
-            if( getLevelCount( subTree.right.right) >= getLevelCount( subTree.right.left) ) // rotate appropriately
-                rotateRight( subTree );
+        else if (getLevelCount(subTree.right) - getLevelCount(subTree.left) > 1)
+        {
+            // Right-Right case
+            if (getLevelCount(subTree.right.right) >= getLevelCount(subTree.right.left))
+                rotateRight(subTree);
+            // Right-Left case
             else
-                doubleRotateOnRightChild( subTree );
+                doubleRotateOnRightChild(subTree);
         }
-        //subTree.height = Math.max( getLevelCount( subTree.left), getLevelCount( subTree.right) ) + 1;  In the course but does't seem to apply
-        return;
     }
 
     /** TODO O( 1 )
@@ -203,7 +210,8 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
     private void rotateRight(BinaryNode<ValueType> node1){
         node1.right.parent = node1.parent; //child take node parent
         node1.parent = node1.right; //child become node1 parent
-        node1.right = node1;
+        node1.right = node1.right.left;
+        node1.right.left.parent = node1;
     }
 
     /** TODO O( 1 )
@@ -211,8 +219,8 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param node1 Node to become child of the right child of its left child
      */
     private void doubleRotateOnLeftChild(BinaryNode<ValueType> node1){
-       rotateLeft(node1);
        rotateRight(node1.left);
+       rotateLeft(node1);
     }
 
     /** TODO O( 1 )
@@ -220,8 +228,8 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param node1 Node to become child of the left child of its right child
      */
     private void doubleRotateOnRightChild(BinaryNode<ValueType> node1){
-        rotateRight(node1);
         rotateLeft(node1.right);
+        rotateRight(node1);
     }
 
     /** TODO O( log n )
@@ -231,42 +239,36 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @return if value already exists in the root tree
      */
     private boolean contains(ValueType value, BinaryNode<ValueType> currentNode){
-        boolean valueThere = false;
+        // No match
+        if (currentNode == null)
+            return false;
 
-        int compareResult = value.compareTo( currentNode.value); // Calculate the difference between the value and the current value to decide where to continue to search
+        // Calculate the difference between the value and the current value to decide where to continue to search
+        int compareResult = value.compareTo(currentNode.value);
 
-        if( compareResult< 0 ) { // Difference negative, value is better than the actual nod -> go to left child
-            if (currentNode.left == null) {
-                return false; // Arrived at the last possible node and value not there, return false
-            }
-            else {// Continue the research
-                contains(value, currentNode.left);
-            }
-        }
-        else if( compareResult> 0 ) { // Difference positive, value is lesser than the actual nod -> go to right child
-            if (currentNode.right == null) {
-                return false; // Arrived at the last possible node and value not there, return false
-            }
-            else {// Continue the research
-                contains(value, currentNode.left);
-            }
-        }
-        else {// Difference  = 0! value found yay \o/
-            valueThere =  true;
-        }
-        return valueThere;
+        if ( compareResult < 0 ) // value is lower than the currentNode's, so check to the left
+                return contains(value, currentNode.left);
+        else if ( compareResult > 0 ) // value is higher than the currentNode's, so check to the right
+                return contains(value, currentNode.right);
+        else // value found yay \o/
+            return true;
     }
 
     /** TODO O( n )
      * Returns the number of level contained in subTree including subTree node level
      * @return Number of level contained in subTree including subTree node level
+     *         With the following tree, we should get
+     *                  3   (1 level)
+     *               /   \
+     *             1      5 (2 levels)
+     *           / \    / \
+     *          0   2  4   6 (3 levels)
      */
     private int getLevelCount(BinaryNode<ValueType> subTree){
-        int level = 1;
-        while (subTree.right != null || subTree.left!= null) {
-            //no idea, not recursive
-        }
-        return level;
+        if (subTree == null)
+            return 0;
+        else
+            return 1 + Math.max( getLevelCount(subTree.left), getLevelCount(subTree.right) );
     }
 
     /** TODO O( log n )
@@ -288,18 +290,12 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param items List being modified to contain all values in the root tree in ascending order
      */
     private void infixOrder(BinaryNode<ValueType> currentNode, List<ValueType> items){
-        while (  (currentNode.right != null || currentNode.left!= null) &&    // while the child exist and are not already in items
-                !(  items.contains(currentNode.left.value) && items.contains(currentNode.right.value)  )  ) {
-            if (currentNode.left != null && !items.contains(currentNode.left.value) ){ // left child not yet in items
-                infixOrder(currentNode.left,items); // go gettem
-                items.add(currentNode.value); // so we keep the order left->parent->right, the ascendant order
-            }
-            else if (currentNode.right != null && !items.contains(currentNode.right.value)) // right child is the one we didn't added yet
-                infixOrder(currentNode.right,items);
-        }
-        if (!items.contains(currentNode.value)){
+        if (currentNode != null){
+            infixOrder(currentNode.left, items);
             items.add(currentNode.value);
+            infixOrder(currentNode.right,items);
         }
+
     }
 
     /** TODO O( n )
@@ -308,12 +304,14 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param items List being modified to contain all values in the root tree in level order from top to bottom
      */
     private void levelOrder(ArrayDeque<BinaryNode<ValueType>> nodesToCheck, List<ValueType> items) {
-        // First node to process
-        BinaryNode<ValueType> currentNode = root;
 
-        while (currentNode != null){
-            //Print value
-            System.out.println(currentNode.value);
+        while (!nodesToCheck.isEmpty()){
+
+            // Pop the following node to process (FIFO)
+            BinaryNode<ValueType> currentNode = nodesToCheck.poll();
+
+            // Save value
+            items.add(currentNode.value);
 
             // Add children from left to right
             if (currentNode.left != null)
@@ -321,10 +319,7 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
             if (currentNode.right != null)
                 nodesToCheck.add(currentNode.right);
 
-            // Pop the following node to process (FIFO)
-            currentNode = nodesToCheck.pop();
         }
-
     }
     
     static class BinaryNode<ValueType> {
