@@ -93,33 +93,33 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param currentNode Node currently being accessed in this recursive method
      * @return if parent node should balance
      */
-    private boolean insert (ValueType value, BinaryNode<ValueType> currentNode){ // Recursive code from the course addapted
-//
-//        int compareResult = value.compareTo(currentNode.value);
-//        boolean isImbalanced=false;
-//        if(compareResult==0) return false;  // The value is already present in the tree, no duplication of a value so we do nothing
-//
-//        // Calculate the difference between the value and the current value to decide where to continue to search
-//        if( compareResult< 0 ) // Difference negative, value is better than the actual nod -> go to left child
-//            if(currentNode.left == null){ // Place of the child found!
-//                currentNode.left = new BinaryNode<ValueType>(value, currentNode); // Place the child
-//                return true;
-//            }
-//            else { // Continue to search the right place
-//                isImbalanced=insert(value, currentNode.left);
-//            }
-//        else if( compareResult> 0 ) // Difference positive, value is lesser than the actual nod -> go to right child
-//            if(currentNode.right == null){ // Place of the child found!
-//                currentNode.right = new BinaryNode<ValueType>(value, currentNode); // Place the child\
-//                 return true;
-//            }
-//            else { // Continue to search the right place
-//                isImbalanced=insert(value, currentNode.right);
-//            }
-//
-//        if(isImbalanced) balance(currentNode ); // Need to re balance to be sur to keep the O(log(n))
-//        return true;
-        return false;
+    private boolean insert (ValueType value, BinaryNode<ValueType> currentNode){
+
+        if (currentNode == null)
+            return false;
+
+        boolean needsBalancing = false;
+        int compareResult = value.compareTo(currentNode.value);
+
+        if (compareResult < 0)
+            if (currentNode.left == null){
+                currentNode.left = new BinaryNode<ValueType>(value, currentNode);
+                return true;
+            } else { // Keep looking left for space
+                needsBalancing = insert(value, currentNode.left);
+            }
+        else if (compareResult > 0){
+            if (currentNode.right == null){
+                currentNode.right = new BinaryNode<ValueType>(value, currentNode);
+                return true;
+            } else { // Keep searching right for space
+                needsBalancing = insert(value, currentNode.right);
+            }
+        }
+
+        if (needsBalancing) balance(currentNode); // Keep the O(log(n)) with balancing
+
+        return needsBalancing;
     }
 
     /** TODO O ( log n )
@@ -129,35 +129,56 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param currentNode Node currently being accessed in this recursive method
      * @return if parent node should balance
      */
-    private boolean remove(ValueType value, BinaryNode<ValueType> currentNode) { // Recursive code from the course addapted
+    private boolean remove(ValueType value, BinaryNode<ValueType> currentNode) {
 
+        // Value not found, no balancing needed
         if (currentNode == null)
             return false;
 
-        boolean isImbalanced = false;
+        boolean needsBalancing;
         int compareResult = value.compareTo(currentNode.value);
 
+        // Value to insert is lower than currentNode's data
         if (compareResult < 0)
-             isImbalanced = remove( value, currentNode.left);
+            needsBalancing = remove(value, currentNode.left);
+        // Value to insert is lower than currentNode's data
         else if (compareResult > 0)
-            isImbalanced = remove( value, currentNode.right);
-        else {
-            if (currentNode.left != null && currentNode.right != null){
+             needsBalancing = remove(value, currentNode.right);
+        //
+        // Value to insert is equal to currentNode's data
+        // currentNode has two children
+        else if (currentNode.left != null && currentNode.right != null)
+        {
                 currentNode.value = findMin(currentNode.right).value;
-                isImbalanced = remove(currentNode.value, currentNode.right);
-            } else {
-                if (currentNode.left == null) {
-                    currentNode.right.parent = currentNode.parent;
-                    currentNode = currentNode.right;
-                } else {
-                    currentNode.left.parent = currentNode.parent;
-                    currentNode = currentNode.left;
-                }
-                isImbalanced = true;
-            }
+                 needsBalancing = remove(currentNode.value, currentNode.right);
         }
-        if (isImbalanced) balance(currentNode);
-        return true;
+        else { // one child or none
+            if (currentNode.left != null) { // if child is on left
+                currentNode.value = currentNode.left.value;
+                currentNode.left = null;
+            } else if (currentNode.right != null) { // if child is on right
+                currentNode.value = currentNode.right.value;
+                currentNode.right = null;
+            } else if (currentNode.parent != null) { // Leaf
+
+                BinaryNode<ValueType> leftChildOfParent = currentNode.parent.left;
+
+                if (leftChildOfParent != null) {
+                    if (leftChildOfParent.value.equals(value))
+                        // currentNode is a left child
+                        currentNode.parent.left = null;
+                } else // currentNode is a right child
+                    currentNode.parent.right = null;
+
+            } else // tree of one node
+                root = null;
+
+            needsBalancing = true;
+        }
+
+        if (needsBalancing)
+            balance(currentNode);
+        return needsBalancing;
     }
 
     /** TODO O( n )
@@ -194,13 +215,22 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param node1 Node to become child of its left child
      */
     private void rotateLeft(BinaryNode<ValueType> node1){
-//        BinaryNode<ValueType> k1 = k2.left;
-//        k2.left = k1.right;
-//        k1.right = k2;
-        node1.left.parent = node1.parent; //child take node parent
-        node1.parent = node1.left; //child become node1 parent
-        node1.left = node1.left.right;
-        node1.left.right.parent = node1;
+        BinaryNode<ValueType> k1 = node1.left;
+        
+        if (node1.parent != null){
+            if (node1.parent.left.value.equals(node1.value))
+                node1.parent.left = k1;
+            else
+                node1.parent.right = k1;
+        } else
+            root = k1;
+
+        k1.parent = node1.parent;
+        node1.parent = k1;
+        node1.left = k1.right;
+        k1.right = node1;
+        if (node1.left != null)
+            node1.left.parent = node1;
     }
 
     /** TODO O( 1 )
@@ -208,10 +238,23 @@ public class AvlTree<ValueType extends Comparable<? super ValueType> > {
      * @param node1 Node to become child of its right child
      */
     private void rotateRight(BinaryNode<ValueType> node1){
-        node1.right.parent = node1.parent; //child take node parent
-        node1.parent = node1.right; //child become node1 parent
-        node1.right = node1.right.left;
-        node1.right.left.parent = node1;
+
+        BinaryNode<ValueType> k2 = node1.right;
+
+        if (node1.parent != null){
+            if (node1.parent.left.value.equals(node1.value))
+                node1.parent.left = k2;
+            else
+                node1.parent.right = k2;
+        } else
+            root = k2;
+
+        k2.parent = node1.parent;
+        node1.parent = k2;
+        node1.right = k2.left;
+        k2.left = node1;
+        if (node1.right != null)
+            node1.right.parent = node1;
     }
 
     /** TODO O( 1 )
