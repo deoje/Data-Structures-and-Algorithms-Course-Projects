@@ -62,6 +62,7 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
                 filledHole = true;
             }
         }
+        modifications++;
 	    return true;
     }
     
@@ -147,7 +148,8 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
      * @param size    Indice max du tableau
      */
     private void percolateDownMinHeap( int hole, int size ){
-	     percolateDownMinHeap(array, hole, size, true);
+        percolateDownMinHeap(array, hole, size, true);
+        modifications++;
     }
     
     /**
@@ -183,6 +185,7 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
      */
     private void percolateDownMaxHeap( int hole, int size ){
 	    percolateDownMaxHeap(array, hole, size, true);
+        modifications++;
     }
     
     /**
@@ -242,11 +245,67 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
     
     public String nonRecursivePrintFancyTree()
     {
-	String outputString = "";
-	
-	//COMPLETEZ
+        String outputString = "";
 
-	return outputString;
+        int index = 1;
+        String stof = "";
+        String connectChild = "|__";
+        String aloneLine = "|  ";
+        String space = "   ";
+        String nullS  = "null\n";
+
+        Boolean didLeft = false;
+
+        while (index > 0) {
+
+            outputString += stof + connectChild + array[index] + "\n"; // doing the first range
+
+            if (index * 2 <= currentSize) { // going left
+                if(didLeft){
+                    stof += aloneLine; //line going down
+                }
+                else {
+                    stof += space; //no more line
+                }
+
+                didLeft = true;
+                index *= 2; // next range
+            }
+
+            else if (didLeft & index + 1 <= currentSize) { // end of before
+                didLeft = false;
+                index++;
+            }
+
+            else { //going to the next left
+
+                if(didLeft == true & index == this.size()) {
+                    outputString += stof + connectChild + "null\n";
+                }
+
+                int spaceStof = stof.length() - 3;
+                index = index /2;
+                if( index > 0) {
+                    stof = stof.substring(0, spaceStof); // change the space for the range
+                }
+
+                while(index % 2 != 0 & index > 0){ // find the next parent branch
+                    int spaceStof1 = stof.length() - 3;
+                    index = index /2;
+
+                    if(index > 0) {
+                        stof = stof.substring(0, spaceStof1);
+                    }
+                }
+
+                if(index > 0) {
+                    index +=1; // doing the next node
+                }
+                didLeft =  false;
+            }
+        }
+
+        return outputString;
     }
     
     public String printFancyTree()
@@ -285,21 +344,38 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
     }
     
     private class HeapIterator implements Iterator {
-	
-	public boolean hasNext() {
-	    //COMPLETEZ
-            return false/**/;
-	}
 
-	public Object next() throws NoSuchElementException, 
-				    ConcurrentModificationException, 
-				    UnsupportedOperationException {
-	    //COMPLETEZ
-		return null/**/;
-	}
-	
-	public void remove() {
-	    throw new UnsupportedOperationException();
-	}
-    }
+        int compteModifs; // to compare the number of modifications during the iteration
+        int positionIterator;
+
+        public HeapIterator() {
+            this.compteModifs = modifications; // set up to the initial values
+            this.positionIterator = 0;
+        }
+
+        public boolean hasNext() {
+            return (++positionIterator <= currentSize); // if the current size is less than the position then we are out of the array
+        }
+
+        public Object next() throws NoSuchElementException,
+                        ConcurrentModificationException,
+                        UnsupportedOperationException {
+
+            if(compteModifs != modifications) { // there's been a modifiaction during the iteration (clear, offer or percolate)
+                throw new ConcurrentModificationException(); //asked error
+            }
+
+            if(hasNext() == false) {
+                throw new NoSuchElementException();
+            }
+
+            else {
+                return array[++positionIterator];
+            }
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+        }
 }

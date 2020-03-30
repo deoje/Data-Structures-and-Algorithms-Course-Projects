@@ -20,10 +20,10 @@ public class Main
       // En insérant les éléments un a un
       for( i = 11, j = 0; j != numItems; i = ( i + 37 ), j++ )
       {
-	  heap.offer( i );
-	  items[ j ] = i;
+         heap.offer( i );
+         items[ j ] = i;
 
-	  i %=  numItems; 
+         i %=  numItems;
       }
 
       // en construisant le monceau depuis le depart
@@ -70,6 +70,26 @@ public class Main
       /*
        * Ajouter appels pour repondre a la question
        **/
+
+      System.out.println("\nPartie 3 \n");
+
+      PriorityQueue<Integer> prioQ = new PriorityQueue<Integer>();
+      prioQ.addAll(Arrays.asList(items));
+
+      System.out.println("Test poll sur PriorityQueue");
+      System.out.println(  "Resultat du poll : "+prioQ.poll() );
+      System.out.println("Test poll sur BinaryHeap");
+      System.out.println( "Resultat du poll : " + heap.poll() );
+
+      System.out.println( "Test modification pendant iteration sur PriorityQueue : Pas d'exception malgré modification durant l'iteration " );
+      for (int item : prioQ) {
+         heap.offer(8); // pas implementer ici donc iteration devrait continuer malgré modification
+      }System.out.println( "Iteration terminée" );
+      System.out.println( "Test modification pendant iteration sur BinaryHeap : Exception demandée et reussite car modification durant l'iteration" );
+      for (int item : heap) {
+         heap.offer(8);//modification devrait induire erreur ConcurrentModificationException, fonctionne
+      }System.out.println( "Iteration terminée" );
+
    }
 
    private static <AnyType> String printArray(AnyType[] a)
