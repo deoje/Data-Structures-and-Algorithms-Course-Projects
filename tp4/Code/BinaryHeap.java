@@ -45,20 +45,20 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
 	        doubleArray();
 
         int hole = ++currentSize;
-        array[ 0 ] = x; // in case the element to be inserted is the extremum
+        array[ 0 ] = x; // in case the element is to be inserted at the root
+        array[ hole ] = x;
 
         boolean filledHole = false;
-        while (!filledHole) {
-            if (min && // Working with min heap
-                    x.compareTo(array[hole / 2]) < 0 // The parent's key is greater
+        while( !filledHole ) {
+            if( min && // Working with min heap
+                    array[ hole ].compareTo( array[ hole / 2 ] ) < 0 // The parent's key is greater
                     || !min && // Working with max heap
-                    x.compareTo(array[hole / 2]) > 0) // The parent's key is lesser
+                    array[ hole ].compareTo( array[ hole / 2 ] ) > 0 ) // The parent's key is lesser
             {
-                // Utiliser swapReferences ici ???
-                array[hole] = array[hole / 2];
-                hole /= 2;
-            } else {
-                array[hole] = x;
+                swapReferences(hole, hole / 2);
+                hole = hole/2;
+            }
+            else {
                 filledHole = true;
             }
         }
@@ -362,7 +362,7 @@ public class BinaryHeap<AnyType extends Comparable<? super AnyType>> extends Abs
                         UnsupportedOperationException {
 
             if(compteModifs != modifications) { // there's been a modifiaction during the iteration (clear, offer or percolate)
-                throw new ConcurrentModificationException(); //asked error
+                throw new ConcurrentModificationException("/!\\ Concurrent Modification Detected /!\\\n"); //asked error
             }
 
             if(hasNext() == false) {

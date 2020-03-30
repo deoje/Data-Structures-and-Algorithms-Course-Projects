@@ -66,30 +66,45 @@ public class Main
       BinaryHeap.heapSortReverse( items );
       System.out.println("Tableau inversement ordonne:");
       System.out.println( printArray( items ) );
-      
-      /*
-       * Ajouter appels pour repondre a la question
-       **/
+
+      // ************
+      //  Partie 3 *
+      // ************
 
       System.out.println("\nPartie 3 \n");
 
-      PriorityQueue<Integer> prioQ = new PriorityQueue<Integer>();
-      prioQ.addAll(Arrays.asList(items));
+      PriorityQueue<Integer> priorQ = new PriorityQueue<>(Arrays.asList(items));
 
       System.out.println("Test poll sur PriorityQueue");
-      System.out.println(  "Resultat du poll : "+prioQ.poll() );
+      System.out.println(  "Resultat du poll : "+priorQ.poll() );
       System.out.println("Test poll sur BinaryHeap");
       System.out.println( "Resultat du poll : " + heap.poll() );
 
-      System.out.println( "Test modification pendant iteration sur PriorityQueue : Pas d'exception malgré modification durant l'iteration " );
-      for (int item : prioQ) {
-         heap.offer(8); // pas implementer ici donc iteration devrait continuer malgré modification
-      }System.out.println( "Iteration terminée" );
-      System.out.println( "Test modification pendant iteration sur BinaryHeap : Exception demandée et reussite car modification durant l'iteration" );
-      for (int item : heap) {
-         heap.offer(8);//modification devrait induire erreur ConcurrentModificationException, fonctionne
-      }System.out.println( "Iteration terminée" );
+      System.out.println(
+              "\nTest modification pendant iteration sur PriorityQueue: " +
+                      "Pas d'exception malgre modification durant l'iteration "
+      );
+      for (int item : priorQ) {
+         heap.offer(item); // Iteration avec l'iterateur de PriorityQueue --> Aucune modif concurrente
+      }System.out.println( "Iteration terminée\n" );
 
+      System.out.println(
+              "Test modification pendant iteration sur BinaryHeap :" +
+                     " Exception demandée et reussite car modification durant l'iteration"
+      );
+
+      try {
+         for (int item : heap) {
+            heap.offer(item); //  Iteration avec l'iterateur de BinaryHeap --> /!\ Modifs concurrente /!\
+            System.out.println(Integer.toString(item) + " ajouté au heap");
+         }
+         System.out.println("Iteration terminée");
+      } catch (ConcurrentModificationException e){
+         System.out.println(
+                 e.getMessage() +
+                         "L'ajout de l'entier dans le heap rend l'iterateur invalide"
+         );
+      }
    }
 
    private static <AnyType> String printArray(AnyType[] a)
