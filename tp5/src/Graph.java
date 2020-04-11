@@ -22,7 +22,7 @@ public class Graph {
 				edgesToSource.add(edgesT);
 			}
 		}
-		return null;
+		return edgesToSource;
 		
 	}
 	public List<Edge> getEdgesGoingTo(Node dest) {
@@ -33,7 +33,7 @@ public class Graph {
 				edgesToDestination.add(edgesT);
 			}
 		}
-		return null;
+		return edgesToDestination;
 	}
 	
 	// Accesseurs 

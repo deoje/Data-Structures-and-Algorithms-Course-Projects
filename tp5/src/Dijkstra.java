@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,38 @@ public class Dijkstra {
 
 		dijkstraTable = new HashMap[graph.getNodes().size()];
 		path = new Stack<Edge>();
-		
+
+		List<Node> noeudsAtteints = new ArrayList<Node>(); // enregiste les chemins essayés
+		List<Node> noeudsNonAtteints = graph.getNodes(); // j'ai ajouté l'attribut longueur à node. à l'infini de base pour aider l'algo
+		noeudsNonAtteints.get(s.getId()).setLongueur(0);
+		noeudsAtteints.add(s);
+
+		while (!noeudsAtteints.contains(d)) {
+
+			for (Node noeudSoucre : noeudsAtteints) { //pour tous les sommets deja integrés
+				Edge meilleurChemin = new Edge();
+				int minTrajetVoisinsEnTout = 99999;
+				List<Edge> noeudsVoisins = graph.getEdgesGoingFrom(noeudSoucre);
+
+				for (Edge chemin : noeudsVoisins) { // sur tous les voisins non connus
+
+					if (!noeudsAtteints.contains(chemin.getDestination())){
+						noeudsAtteints.add(chemin.getDestination()); // on ajoute tous les nouveaux voisins
+						// on met leurs longueur à la longueur qu'il nous a fallu pour les atteindre :
+						noeudsNonAtteints.get(chemin.getDestination().getId()).setLongueur(chemin.getDistance() + noeudSoucre.getLongueur());
+						// on veut a chaque iteration savoir en plus le meilleur chemin
+						if(noeudsNonAtteints.get(chemin.getDestination().getId()).getLongueur() < minTrajetVoisinsEnTout) {
+							minTrajetVoisinsEnTout = noeudsNonAtteints.get(chemin.getDestination().getId()).getLongueur();
+							meilleurChemin = chemin;
+						}
+					}
+				}
+				path.push(meilleurChemin);
+			}
+		} // destination atteinte, maintenant donner le chemin precis PAS FAIT
+
+
+
 		// A compléter
 
 		
