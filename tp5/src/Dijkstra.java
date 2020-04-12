@@ -22,8 +22,7 @@ public class Dijkstra {
 
 		dijkstraTable = new HashMap[graph.getNodes().size()];
 		path = new Stack<Edge>();
-
-		List<Node> noeudsAtteints = new ArrayList<Node>(); // enregiste les chemins essayés
+		List<Node> noeudsAtteints = new ArrayList<Node>(); // enregiste les noeuds intégrés
 		List<Node> noeudsNonAtteints = graph.getNodes(); // j'ai ajouté l'attribut longueur à node. à l'infini de base pour aider l'algo
 		noeudsNonAtteints.get(s.getId()).setLongueur(0);
 		noeudsAtteints.add(s);
@@ -42,13 +41,14 @@ public class Dijkstra {
 						// on met leurs longueur à la longueur qu'il nous a fallu pour les atteindre :
 						noeudsNonAtteints.get(chemin.getDestination().getId()).setLongueur(chemin.getDistance() + noeudSoucre.getLongueur());
 						// on veut a chaque iteration savoir en plus le meilleur chemin
-						if(noeudsNonAtteints.get(chemin.getDestination().getId()).getLongueur() < minTrajetVoisinsEnTout) {
-							minTrajetVoisinsEnTout = noeudsNonAtteints.get(chemin.getDestination().getId()).getLongueur();
-							meilleurChemin = chemin;
-						}
+						//if(noeudsNonAtteints.get(chemin.getDestination().getId()).getLongueur() < minTrajetVoisinsEnTout) {
+						//	minTrajetVoisinsEnTout = noeudsNonAtteints.get(chemin.getDestination().getId()).getLongueur();
+						//						//	meilleurChemin = chemin;
+						dijkstraTable[noeudSoucre.getId()].put(chemin.getDestination(),chemin);
+
 					}
 				}
-				path.push(meilleurChemin);
+				//path.push(meilleurChemin);
 			}
 		} // destination atteinte, maintenant donner le chemin precis PAS FAIT
 
@@ -70,17 +70,20 @@ public class Dijkstra {
 	}
 
 	private Edge getMinimum (Edge e1, Edge e2) {
-		// A completer
-		return null;
+		// A completer FAIT
+		if(e1.getDistance()>=e2.getDistance()){
+			return e1;
+		}
+		return e2;
 	}
 	
 
 	public void showTable() {
 		// A completer
-		
-	}
-
-        public String printShortPath(Node source, Node destination) {
+		return;
+	}}
+/*
+	public String printShortPath(Node source, Node destination) {
 		{
 		this.findPath(source,destination);
 		StringBuilder chemin = new StringBuilder();
@@ -106,3 +109,4 @@ public class Dijkstra {
 		
 	}
 }
+*/
