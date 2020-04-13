@@ -7,8 +7,7 @@ public class Edge {
 	
 	public Edge () {}
 
-
-        public Edge(Node s, Node d) {
+	public Edge(Node s, Node d) {
 		this.source = s;
 		this.destination = d;		
 	}
@@ -35,6 +34,15 @@ public class Edge {
 	public int getDistance() {
 		return distance;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "{" +
+				source.getName() +
+				", " +
+				destination.getName() +
+				", " +
+				distance +
+				'}';
+	}
 }

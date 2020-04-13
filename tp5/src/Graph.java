@@ -1,42 +1,45 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 
 
 public class Graph {
 
-	private List<Node> nodes; // Noeuds
-	private List<Edge> edges; // Les arcs
+	private List<Node> nodes; // Nodes
+	private List<Edge> edges; // Edges
 	
 	public Graph() {
-		// A compléter FAIT
-		nodes = new ArrayList<Node>();
-		edges = new ArrayList<Edge>();
+
+		nodes = new ArrayList<>();
+		edges = new ArrayList<>();
 	}
 	
 	public List<Edge> getEdgesGoingFrom(Node source) {
-		// A complèter FAIT
-		List<Edge> edgesToSource = new ArrayList<Edge>();
-		for (Edge edgesT : edges) {
-			if (edgesT.getSource() == source){
-				edgesToSource.add(edgesT);
+
+		List<Edge> edgesToSource = new ArrayList<>();
+
+		for (Edge edge : edges) {
+			if (edge.getSource() == source){
+				edgesToSource.add(edge);
 			}
 		}
 		return edgesToSource;
-		
 	}
+
 	public List<Edge> getEdgesGoingTo(Node dest) {
-		// A complèter FAIT
-		List<Edge> edgesToDestination = new ArrayList<Edge>();
-		for (Edge edgesT : edges) {
-			if (edgesT.getDestination() == dest){
-				edgesToDestination.add(edgesT);
+
+		List<Edge> edgesToDestination = new ArrayList<>();
+
+		for (Edge edge : edges) {
+			if (edge.getDestination() == dest){
+				edgesToDestination.add(edge);
 			}
 		}
 		return edgesToDestination;
 	}
 	
-	// Accesseurs 
+	// Accessors
 	public List<Node> getNodes() {
 		return nodes;
 	}

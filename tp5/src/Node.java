@@ -1,31 +1,26 @@
-
+import java.util.LinkedList;
+import java.util.List;
 
 public class Node {
 
 	private int id;
-	private int longueur;
 	private String name;
+	private int distance;
+	private Edge previous;
 		
-        public Node(int id, String n) {
+	public Node(int id, String n) {
 		this.id = id;
-		this.name = n;
-		this.longueur = 9999;
+		name = n;
+		distance = Integer.MAX_VALUE;
+		previous = null;
 	}
-		
+
 	public int getId() {
 		return id;
 	}
 
-	public int getLongueur() {
-		return longueur;
-	}
-	
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public void setLongueur(int longueur) {
-		this.longueur = longueur;
 	}
 	
 	public String getName() {
@@ -34,13 +29,28 @@ public class Node {
 	
 	public void setName(String name) {
 		this.name = name;
-	} 
-	
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+
+	public void setDistance(int distance) {
+		this.distance = distance;
+	}
+
+	public Edge getPrevious() {
+		return previous;
+	}
+
+	public void setPrevious(Edge previous) {
+		this.previous = previous;
+	}
+
 	@Override
 	public int hashCode() {
 		return id;
 	}
 
-	
-	
+
 }
