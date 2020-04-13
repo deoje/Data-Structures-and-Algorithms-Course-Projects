@@ -123,12 +123,14 @@ public class Dijkstra {
 	}
 
 	private Edge getMinimum (Edge e1, Edge e2) {
+		if (e1 == null || e2 == null)
+			return null;
+
 		if( e1.getDistance() >= e2.getDistance() ){
 			return e2;
 		}
 		return e1;
 	}
-
 
 	public void showTable() {
 
