@@ -1,18 +1,15 @@
-import java.util.LinkedList;
-import java.util.List;
-
 public class Node {
 
 	private int id;
 	private String name;
-	private int distance;
+	private int length;
 	private Edge previous;
 		
 	public Node(int id, String n) {
 		this.id = id;
-		name = n;
-		distance = Integer.MAX_VALUE;
-		previous = null;
+		this.name = n;
+		this.length = Integer.MAX_VALUE;
+		this.previous = null;
 	}
 
 	public int getId() {
@@ -31,12 +28,12 @@ public class Node {
 		this.name = name;
 	}
 
-	public int getDistance() {
-		return distance;
+	public int getLength() {
+		return length;
 	}
 
-	public void setDistance(int distance) {
-		this.distance = distance;
+	public void setLength(int length) {
+		this.length = length;
 	}
 
 	public Edge getPrevious() {

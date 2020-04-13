@@ -15,7 +15,7 @@ public class Edge {
 	public Edge(Node s, Node d, int dist) {
 		this.source = s;
 		this.destination = d;
-                this.distance = dist ; 		
+		this.distance = dist ;
 	}
      
       	

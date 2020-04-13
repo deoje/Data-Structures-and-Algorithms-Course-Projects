@@ -1,4 +1,4 @@
-import java.lang.reflect.Array;
+import java.security.Key;
 import java.util.*;
 
 
@@ -15,51 +15,66 @@ public class Dijkstra {
 
 	public void findPath(Node s, Node d) {
 
+		if (graph == null)
+			return;
+
 		dijkstraTable = new HashMap[graph.getNodes().size()];
 		path = new Stack<>();
 
-		List<Node> nodes = graph.getNodes();
+		List<Node> nodes = new ArrayList<>(graph.getNodes());
 
+		HashMap<Node, Edge> column = new HashMap<>();
 		for (Node node : nodes){
-			node.setDistance(Integer.MAX_VALUE);
-			node.setPrevious(null);
+			column.put(node, new Edge(s, node, Integer.MAX_VALUE));
 		}
 
-		s.setDistance(0);
+		column.put(s, new Edge(s, s, 0));
+		path.push(column.get(s));
+		dijkstraTable[0] = column;
 
-		int i = 0;
-		Node current = s;
-		dijkstraTable[i].put(current, null);
+		int i = 1;
+		Node current;
 		while (!nodes.isEmpty()){
-			i++;
-			current = nodes
-					.stream()
-					.min(Comparator.comparing(Node::getDistance))
-					.orElse(null);
+//			current = nodes
+//					.stream()
+//					.min(Comparator.comparing(Node::getLength))
+//					.orElse(null);
+
+			column = new HashMap<>(column); // Shallow copy
+			current = getMinimum(column);
 
 			nodes.remove(current);
 
 			if (current == d)
 				break;
+
 			for (Edge adjacentEdge : graph.getEdgesGoingFrom(current)){
+
 				Node neighbor = adjacentEdge.getDestination();
+
 				if (!nodes.contains(neighbor))
 					continue;
-				int altDist = current.getDistance() + adjacentEdge.getDistance();
-				if (altDist < neighbor.getDistance()){
-						neighbor.setDistance(altDist);
-						neighbor.setPrevious(adjacentEdge);
-						dijkstraTable[i].put(current, adjacentEdge);
-				}
+
+				int altDist = column.get(current).getDistance() + adjacentEdge.getDistance();
+
+				if (altDist < column.get(neighbor).getDistance())
+						column.put(neighbor, new Edge(current, neighbor, altDist));
+						path.push(column.get(neighbor));
 			}
+
+			column.remove(current);
+			dijkstraTable[i] = column;
+			i++;
+
 		}
-		Edge currentEdge = current.getPrevious();
-		if (currentEdge != null || current == s){
-			while (current != null){
-				path.push(current.getPrevious());
-				current = current.getPrevious().getDestination();
-			}
-		}
+
+//		Edge currentEdge = current.getPrevious();
+//		if (currentEdge != null || current == s){
+//			while (currentEdge != null){
+//				path.push(currentEdge);
+//				currentEdge = currentEdge.getSource().getPrevious();
+//			}
+//		}
 
 //		List<Node> noeudsAtteints = new ArrayList<Node>(); // enregiste les noeuds intégrés
 //		List<Node> noeudsNonAtteints = graph.getNodes(); // j'ai ajouté l'attribut longueur à node. à l'infini de base pour aider l'algo
@@ -95,7 +110,6 @@ public class Dijkstra {
 //
 //		// A compléter
 //
-
 	}
 
 	private Node getMinimum(Map<Node, Edge> map) {
@@ -109,32 +123,73 @@ public class Dijkstra {
 	}
 
 	private Edge getMinimum (Edge e1, Edge e2) {
-//		// A completer FAIT
-//		if(e1.getDistance()>=e2.getDistance()){
-//			return e1;
-//		}
-//		return e2;
-		return null;
+		if( e1.getDistance() >= e2.getDistance() ){
+			return e2;
+		}
+		return e1;
 	}
 
 
 	public void showTable() {
-		// A completer
-//		return;
-	}}
-/*
+
+		if (dijkstraTable == null || graph == null)
+			return;
+
+		Node node;
+
+		StringBuilder table = new StringBuilder();
+
+		table.append("[");
+
+		List<Node> nodes = graph.getNodes();
+		for (int i = 0; i < nodes.size(); i++){
+			table.append(nodes.get(i).getName());
+			if (i == nodes.size() - 1)
+				table.append("     ");
+			else
+				table.append("      , ");
+		}
+		table.append("]\n");
+		for (HashMap<Node, Edge> map : dijkstraTable) {
+
+			table.append("[");
+
+			for (int i = 0; i < nodes.size(); i++){
+				node = nodes.get(i);
+				if (map.containsKey(node) &&
+						map.get(node).getDistance() != Integer.MAX_VALUE)
+					table.append(map.get(node).getDistance())
+							.append(map.get(node).getSource().getName());
+				else
+					table.append("  ");
+
+				if (i == nodes.size() - 1)
+					table.append("    ");
+				else
+					table.append("     , ");
+			}
+
+			table.append("]\n");
+
+		}
+		System.out.println(table);
+	}
+
 	public String printShortPath(Node source, Node destination) {
-		{
 		this.findPath(source,destination);
+
+		if (path == null)
+			return "";
+
 		StringBuilder chemin = new StringBuilder();
 		Edge lastEdge = path.pop();
 
 		int longeurDuChemin = lastEdge.getDistance();
-		chemin.append(lastEdge.getDestination().getName() + " ");
+		chemin.append(lastEdge.getDestination().getName()).append(" ");
 
 		while (!path.empty()){
 			if (!path.empty() && path.peek().getDestination() == lastEdge.getSource()){
-				chemin.append(lastEdge.getSource().getName() + " ");
+				chemin.append(lastEdge.getSource().getName()).append(" ");
 				lastEdge = path.pop();
 			}
 			else{
@@ -144,9 +199,7 @@ public class Dijkstra {
 		System.out.print("La longueur du plus court chemin est : ");
 		System.out.println(longeurDuChemin);
 		return "Le chemin le plus court est : " + chemin.reverse().toString();
-
-
-
 	}
+
+
 }
-*/

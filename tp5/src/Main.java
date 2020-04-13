@@ -68,28 +68,29 @@ public class Main {
 		List<Node> listeNoeuds= new ArrayList<Node>();
 		listeNoeuds.add(A);
 		listeNoeuds.add(B);
-		listeNoeuds.add(G);
 		listeNoeuds.add(C);
 		listeNoeuds.add(D);
 		listeNoeuds.add(E);
 		listeNoeuds.add(F);
+		listeNoeuds.add(G);
 		g.setNodes(listeNoeuds);
+
 
 		/*Should print out two list with same length*/
 //		System.out.println(g.getEdgesGoingFrom(C));
 //		System.out.println(g.getEdgesGoingTo(C));
 
-//
-//		// Partie 2:
-//
-//		Dijkstra d = new Dijkstra(g);
-//
-//		d.findPath(A, G/* Spécifiez les paramètres */);
-//
-//		d.showTable();
-//
-//		// Affichage le chemin le plus court :
-//		//System.out.println(d.printShortPath(null, null/* Spécifiez les paramètres */));
-//
+
+		// Partie 2:
+
+		Dijkstra d = new Dijkstra(g);
+
+		d.findPath(A, G);
+
+		d.showTable();
+
+		// Affichage le chemin le plus court :
+		System.out.println(d.printShortPath(A, G));
+
 	}
 }

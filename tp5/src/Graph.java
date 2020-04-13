@@ -10,7 +10,6 @@ public class Graph {
 	private List<Edge> edges; // Edges
 	
 	public Graph() {
-
 		nodes = new ArrayList<>();
 		edges = new ArrayList<>();
 	}
