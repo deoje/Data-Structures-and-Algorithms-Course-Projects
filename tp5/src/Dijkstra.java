@@ -114,6 +114,7 @@ public class Dijkstra {
 		}
 		table.append("]\n");
 		for (HashMap<Node, Edge> map : dijkstraTable) {
+
 			// if looking for close vertices
 			// dijkstraMap will not be full
 			if( map == null)
